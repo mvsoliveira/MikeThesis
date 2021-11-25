@@ -1,12 +1,14 @@
-import os
-import re
 import numpy as np
 import pandas as pd
 import logging as lgr
+import logging as lgr
+import numpy as np
+import pandas as pd
 lgr.basicConfig(level=lgr.INFO)
 import glob
 from natsort import natsorted
 from Parser import parser
+import matplotlib.pyplot as plt
 
 class Main(object):
     def __init__(self):
@@ -35,6 +37,18 @@ class Main(object):
                     self.raw_data.at[i+k, 'Momentum'] = sum(games['Score'][-self.min_games:])
                 else:
                     self.raw_data.at[i+k, 'Momentum'] = np.NaN
+            self.raw_data.at[i, 'Contract Momentum'] = self.raw_data.at[i, 'Momentum'] - self.raw_data.at[i+1, 'Momentum']
+            self.raw_data.at[i+1, 'Contract Momentum'] = self.raw_data.at[i+1, 'Momentum'] - self.raw_data.at[i, 'Momentum']
+
+#PLOTTING CONTRACT MOMENTUM
+            self.raw_data['Contract Momentum'].plot(kind= 'hist')
+            # plt.hist(self.raw_data.at['Contract Momentum'], color = 'blue', edgecolor = 'black')
+            # plt.title('Histogram of Contract Momentum')
+            # plt.xlabel('Contract Momentum')
+            # plt.ylabel('Strength of Momentum')
+            # print()
+
+
             # if len(Homegames) >= self.min_games:
             #     print("more than 8 games")
             #     row['Home Momentum'] = 1
@@ -44,7 +58,7 @@ class Main(object):
             #row['Visitor Momentum'] = np.NaN
             #row['Home Momentum'] =
             #row['Game Momentum'] =
-            self.games = self.games.append(row, ignore_index=True)
+            #self.games = self.games.append(row, ignore_index=True)
 
         self.raw_data.to_html('../../out/html/combined.html')
         self.games.to_html('../../out/html/games.html')
