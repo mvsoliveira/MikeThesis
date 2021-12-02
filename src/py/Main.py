@@ -1,3 +1,4 @@
+
 import numpy as np
 import pandas as pd
 import logging as lgr
@@ -9,6 +10,8 @@ import glob
 from natsort import natsorted
 from Parser import parser
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+#import seaborn as sns
 
 class Main(object):
     def __init__(self):
@@ -37,32 +40,30 @@ class Main(object):
                     self.raw_data.at[i+k, 'Momentum'] = sum(games['Score'][-self.min_games:])
                 else:
                     self.raw_data.at[i+k, 'Momentum'] = np.NaN
-            self.raw_data.at[i, 'Contract Momentum'] = self.raw_data.at[i, 'Momentum'] - self.raw_data.at[i+1, 'Momentum']
-            self.raw_data.at[i+1, 'Contract Momentum'] = self.raw_data.at[i+1, 'Momentum'] - self.raw_data.at[i, 'Momentum']
+                self.raw_data.at[i, 'Contract Momentum'] = self.raw_data.at[i, 'Momentum'] - self.raw_data.at[i+1, 'Momentum']
+                self.raw_data.at[i+1, 'Contract Momentum'] = self.raw_data.at[i+1, 'Momentum'] - self.raw_data.at[i, 'Momentum']
+###Attempt to make Lng strategy comlumn
+                for i in range(self.raw_data['Contract Momentum']):
+                    if i >= 15:
+                        if self.raw_data['Score'] > 0:
+                    self.raw_data['Long Strategy'] = 0
+                            if self.raw_data['Open'] < 0:
+                        self.raw_data['Long Strategy'] = -1
+                                self.raw_data['Long Strategy'] = 1 - (100 / self.raw_data['Open'])
+                            self.raw_data['Long Strategy'] = (self.raw_data['Open'] / 100) + 1
 
-#PLOTTING CONTRACT MOMENTUM
-            self.raw_data['Contract Momentum'].plot(kind= 'hist')
-            # plt.hist(self.raw_data.at['Contract Momentum'], color = 'blue', edgecolor = 'black')
-            # plt.title('Histogram of Contract Momentum')
-            # plt.xlabel('Contract Momentum')
-            # plt.ylabel('Strength of Momentum')
-            # print()
+#Plotting Contract Momentum
+            lgr.info('Generating plot')
+            plt.hist(self.raw_data['Contract Momentum'], color='blue', edgecolor='black')
+            plt.title('Histogram of Contract Momentum')
+            plt.xlabel('Contract Momentum')
+            plt.ylabel('Strength of Momentum')
+            plt.show()
 
-
-            # if len(Homegames) >= self.min_games:
-            #     print("more than 8 games")
-            #     row['Home Momentum'] = 1
-            # else:
-            #     print("less than 8 games")
-            #     row['Home Momentum'] = np.NaN
-            #row['Visitor Momentum'] = np.NaN
-            #row['Home Momentum'] =
-            #row['Game Momentum'] =
-            #self.games = self.games.append(row, ignore_index=True)
 
         self.raw_data.to_html('../../out/html/combined.html')
         self.games.to_html('../../out/html/games.html')
-
+        #self.raw_data.to_excel(r'/Users/michaelvollmin/Desktop/combined.xlsx')
 if __name__ == '__main__':
     main = Main()
 
