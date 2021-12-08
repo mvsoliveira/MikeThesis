@@ -17,7 +17,7 @@ class Main(object):
     def __init__(self):
         self.min_games = 8
         self.raw_data = pd.DataFrame()
-        filepaths = (natsorted(glob.glob('../../in/xlsx/*.xlsx')))
+        filepaths = (natsorted(glob.glob('../../in/xlsx/*2019*.xlsx')))
         for filepath in filepaths:
             self.raw_data = self.raw_data.append(parser.read_xlsx(filepath),ignore_index=True)
         self.games = pd.DataFrame(columns=['Visitor', 'Home'])
@@ -45,15 +45,15 @@ class Main(object):
 ###Attempt to make Lng strategy column (Using bets of $100)
         for i in range(len(self.raw_data)):
             if self.raw_data.at[i,'Contract Momentum'] >= 15:
-                if self.raw_data['Score'] > 0:
-                    if self.raw_data['Open'] < 0:
-                        self.raw_data['Long Strategy'] = (1 - (100 / self.raw_data['Open'])) * 100
+                if self.raw_data.at[i,'Score'] > 0:
+                    if self.raw_data.at[i,'Open'] < 0:
+                        self.raw_data.at[i,'Long Strategy'] = (1 - (100 / self.raw_data.at[i,'Open'])) * 100
                     else:
-                        self.raw_data['Long Strategy'] = ((self.raw_data['Open'] / 100) + 1) * 100
+                        self.raw_data.at[i,'Long Strategy'] = ((self.raw_data.at[i,'Open'] / 100) + 1) * 100
                 else:
-                    self.raw_data['Long Strategy'] = -100
+                    self.raw_data.at[i,'Long Strategy'] = -100
             else:
-                self.raw_data['Long Strategy'] = 0
+                self.raw_data.at[i,'Long Strategy'] = 0
 
 
 
@@ -61,12 +61,12 @@ class Main(object):
 
 
 #Plotting Contract Momentum
-            lgr.info('Generating plot')
-            plt.hist(self.raw_data['Contract Momentum'], color='blue', edgecolor='black')
-            plt.title('Histogram of Contract Momentum')
-            plt.xlabel('Contract Momentum')
-            plt.ylabel('Strength of Momentum')
-            plt.show()
+        lgr.info('Generating plot')
+        plt.hist(self.raw_data['Contract Momentum'], color='blue', edgecolor='black')
+        plt.title('Histogram of Contract Momentum')
+        plt.xlabel('Contract Momentum')
+        plt.ylabel('Strength of Momentum')
+        plt.show()
 
 
         self.raw_data.to_html('../../out/html/combined.html')
