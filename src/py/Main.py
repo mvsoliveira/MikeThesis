@@ -42,15 +42,16 @@ class Main(object):
                     self.raw_data.at[i+k, 'Momentum'] = np.NaN
                 self.raw_data.at[i, 'Contract Momentum'] = self.raw_data.at[i, 'Momentum'] - self.raw_data.at[i+1, 'Momentum']
                 self.raw_data.at[i+1, 'Contract Momentum'] = self.raw_data.at[i+1, 'Momentum'] - self.raw_data.at[i, 'Momentum']
-###Attempt to make Lng strategy comlumn
+###Attempt to make Lng strategy column
                 for i in range(self.raw_data['Contract Momentum']):
                     if i >= 15:
                         if self.raw_data['Score'] > 0:
                     self.raw_data['Long Strategy'] = 0
                             if self.raw_data['Open'] < 0:
-                        self.raw_data['Long Strategy'] = -1
-                                self.raw_data['Long Strategy'] = 1 - (100 / self.raw_data['Open'])
-                            self.raw_data['Long Strategy'] = (self.raw_data['Open'] / 100) + 1
+                        self.raw_data['Long Strategy'] = -100
+                                self.raw_data['Long Strategy'] = (1 - (100 / self.raw_data['Open']))*100
+                            self.raw_data['Long Strategy'] = ((self.raw_data['Open'] / 100) + 1)*100
+
 
 #Plotting Contract Momentum
             lgr.info('Generating plot')
