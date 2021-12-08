@@ -42,7 +42,7 @@ class Main(object):
                     self.raw_data.at[i+k, 'Momentum'] = np.NaN
                 self.raw_data.at[i, 'Contract Momentum'] = self.raw_data.at[i, 'Momentum'] - self.raw_data.at[i+1, 'Momentum']
                 self.raw_data.at[i+1, 'Contract Momentum'] = self.raw_data.at[i+1, 'Momentum'] - self.raw_data.at[i, 'Momentum']
-###Attempt to make Lng strategy column
+###Attempt to make Lng strategy column (Using bets of $100)
                 for i in range(self.raw_data['Contract Momentum']):
                     if i >= 15:
                         if self.raw_data['Score'] > 0:
