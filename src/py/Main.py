@@ -16,8 +16,11 @@ import matplotlib.pyplot as plt
 class Main(object):
     def __init__(self):
         self.min_games = 8
+        self.portifolio = 1000
+        self.bet_ratio = 0.1
+        self.bet_value = self.bet_ratio*self.portifolio
         self.raw_data = pd.DataFrame()
-        filepaths = (natsorted(glob.glob('../../in/xlsx/*2019*.xlsx')))
+        filepaths = (natsorted(glob.glob('../../in/xlsx/*.xlsx')))
         for filepath in filepaths:
             self.raw_data = self.raw_data.append(parser.read_xlsx(filepath),ignore_index=True)
         self.games = pd.DataFrame(columns=['Visitor', 'Home'])
@@ -43,17 +46,22 @@ class Main(object):
                 self.raw_data.at[i, 'Contract Momentum'] = self.raw_data.at[i, 'Momentum'] - self.raw_data.at[i+1, 'Momentum']
                 self.raw_data.at[i+1, 'Contract Momentum'] = self.raw_data.at[i+1, 'Momentum'] - self.raw_data.at[i, 'Momentum']
 ###Attempt to make Lng strategy column (Using bets of $100)
+        net_balance = self.portifolio
         for i in range(len(self.raw_data)):
             if self.raw_data.at[i,'Contract Momentum'] >= 15:
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i,'Open'] < 0:
-                        self.raw_data.at[i,'Long Strategy'] = (1 - (100 / self.raw_data.at[i,'Open'])) * 100
+                        bet_balance = ((1 - (100 / self.raw_data.at[i,'Open'])) * self.bet_value) -self.bet_value
                     else:
-                        self.raw_data.at[i,'Long Strategy'] = ((self.raw_data.at[i,'Open'] / 100) + 1) * 100
+                        bet_balance = (((self.raw_data.at[i,'Open'] / 100) + 1) * self.bet_value) -self.bet_value
                 else:
-                    self.raw_data.at[i,'Long Strategy'] = -100
+                    bet_balance = -self.bet_value
             else:
-                self.raw_data.at[i,'Long Strategy'] = 0
+                bet_balance = 0
+            self.raw_data.at[i,'Long Strategy'] = bet_balance
+            net_balance = net_balance + bet_balance
+            self.raw_data.at[i, 'Net Balance'] = net_balance
+
 
 
 
