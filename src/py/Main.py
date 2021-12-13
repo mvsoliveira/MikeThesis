@@ -22,19 +22,9 @@ class Main(object):
         filepaths = (natsorted(glob.glob('../../in/xlsx/*2019*.xlsx')))
         for filepath in filepaths:
             self.raw_data = self.raw_data.append(parser.read_xlsx(filepath),ignore_index=True)
-        self.games = pd.DataFrame(columns=['Visitor', 'Home'])
         for i in range(0,len(self.raw_data),2):
-            row = pd.DataFrame()
             self.raw_data.at[i, 'Score'] = self.raw_data.at[i, 'Final']- self.raw_data.at[i+1, 'Final']
             self.raw_data.at[i+1, 'Score'] = self.raw_data.at[i+1, 'Final'] - self.raw_data.at[i, 'Final']
-            row['Year'] = [self.raw_data.at[i, 'Year']]
-            row['Visitor'] = [self.raw_data.at[i,'Team']]
-            row['Home'] = [self.raw_data.at[i+1, 'Team']]
-            row['Score'] = [self.raw_data.at[i, 'Final']- self.raw_data.at[i+1, 'Final']]
-            row['Visitor Open'] = [self.raw_data.at[i, 'Open']]
-            row['Visitor Close'] = [self.raw_data.at[i, 'Close']]
-            row['Home Open'] = [self.raw_data.at[i+1, 'Open']]
-            row['Home Close'] = [self.raw_data.at[i+1, 'Close']]
             for k in range(2):
                 past_data = self.raw_data[0:i+k]
                 games = past_data[past_data['Team'] == self.raw_data.at[i+k,'Team']]
@@ -74,7 +64,6 @@ class Main(object):
 
 
         self.raw_data.to_html('../../out/html/combined.html')
-        self.games.to_html('../../out/html/games.html')
         #self.raw_data.to_excel(r'/Users/michaelvollmin/Desktop/combined.xlsx')
 if __name__ == '__main__':
     main = Main()
