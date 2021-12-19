@@ -50,12 +50,13 @@ class Main(object):
             else:
                 bet_balance = 0
             self.raw_data.at[i,'Long Strategy'] = bet_balance
-            #net_balance = net_balance + bet_balance
+            net_balance = net_balance + bet_balance
             #self.raw_data.at[i, 'Net Balance'] = net_balance
 ###Short Strategy
-        net_balance = self.portifolio
-        self.raw_data.at[i, 'Long Strategy'] = bet_balance
-        for i in range(len(self.raw_data)):
+
+        #net_balance = self.portifolio
+        #self.raw_data.at[i, 'Long Strategy'] = bet_balance
+        #for i in range(len(self.raw_data)):
             if self.raw_data.at[i,'Contract Momentum'] <= -15 :
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i,'Close'] > 0:
@@ -67,8 +68,8 @@ class Main(object):
             else:
                 bet_balance2 = 0
             self.raw_data.at[i,'Short Strategy'] = bet_balance2
-            net_balance = net_balance + (bet_balance + bet_balance2)
-            self.raw_data.at[i,'Net Balance'] = net_balance
+            net_balance2 = net_balance + (bet_balance + bet_balance2)
+            self.raw_data.at[i,'Net Balance'] = net_balance2
 
 #Plotting Contract Momentum
         #lgr.info('Generating plot')
