@@ -19,7 +19,7 @@ class Main(object):
         self.portifolio = 1000
         self.bet_ratio = 0.1
         self.raw_data = pd.DataFrame()
-        filepaths = (natsorted(glob.glob('../../in/xlsx/*.xlsx')))
+        filepaths = (natsorted(glob.glob('../../in/xlsx/*2019*.xlsx')))
         for filepath in filepaths:
             self.raw_data = self.raw_data.append(parser.read_xlsx(filepath),ignore_index=True)
         for i in range(0,len(self.raw_data),2):
@@ -60,7 +60,7 @@ class Main(object):
             if self.raw_data.at[i,'Contract Momentum'] <= -15 :
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i,'Close'] > 0:
-                        bet_balance2 = (((self.raw_data.at[i,'Close'] / 100) + 1) * self.bet_value) -self.bet_value
+                        bet_balance2 = (((self.raw_data.at[i,'Close'] / 100) + 1) * self.bet_value)
                     else:
                         bet_balance2 = ((1 - (100 / self.raw_data.at[i,'Close'])) * self.bet_value) -self.bet_value
                 else:
@@ -68,8 +68,13 @@ class Main(object):
             else:
                 bet_balance2 = 0
             self.raw_data.at[i,'Short Strategy'] = bet_balance2
+            #previous_balance = self.raw_data.at[i + 1, 'Net Balance']
             net_balance2 = net_balance + (bet_balance + bet_balance2)
-            self.raw_data.at[i,'Net Balance'] = net_balance2
+            self.raw_data.at[i,'Net Balance'] = net_balance2 + (bet_balance + bet_balance2)
+            #previous_balance = self.raw_data.at[i-1,'Net Balance']
+
+            #self.raw_data.at[i, 'Contract return'] = bet_balance - bet_balance2)
+            #self.raw_data.at[i + 1, 'Contract Momentum'] = self.raw_data.at[i + 1, 'Momentum'] - self.raw_data.at[i, 'Momentum']
 
 #Plotting Contract Momentum
         #lgr.info('Generating plot')
