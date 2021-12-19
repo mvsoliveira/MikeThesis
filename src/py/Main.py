@@ -62,6 +62,12 @@ class Main(object):
         plt.ylabel('Strength of Momentum')
         plt.show()
 
+        lgr.info('Generating plot')
+        plt.plot(self.raw_data.Net_balance)
+        plt.title('Line Chart starting with $1000')
+        plt.xlabel('Date')
+        plt.ylabel('Net Balance')
+        plt.show()
 
         self.raw_data.to_html('../../out/html/combined.html')
         #self.raw_data.to_excel(r'/Users/michaelvollmin/Desktop/combined.xlsx')
