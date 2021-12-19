@@ -37,8 +37,9 @@ class Main(object):
 ###Attempt to make Lng strategy column (Using bets of $100)
         net_balance = self.portifolio
         for i in range(len(self.raw_data)):
-            self.bet_value = self.bet_ratio * net_balance
-            if self.raw_data.at[i,'Contract Momentum'] >= 15:
+            #self.bet_value = self.bet_ratio * net_balance
+            self.bet_value = self.bet_ratio * self.portifolio
+            if self.raw_data.at[i,'Contract Momentum'] >= 15 :
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i,'Open'] < 0:
                         bet_balance = ((1 - (100 / self.raw_data.at[i,'Open'])) * self.bet_value) -self.bet_value
@@ -49,21 +50,36 @@ class Main(object):
             else:
                 bet_balance = 0
             self.raw_data.at[i,'Long Strategy'] = bet_balance
-            net_balance = net_balance + bet_balance
-            self.raw_data.at[i, 'Net Balance'] = net_balance
-
-
+            #net_balance = net_balance + bet_balance
+            #self.raw_data.at[i, 'Net Balance'] = net_balance
+###Short Strategy
+        net_balance = self.portifolio
+        self.raw_data.at[i, 'Long Strategy'] = bet_balance
+        for i in range(len(self.raw_data)):
+            if self.raw_data.at[i,'Contract Momentum'] <= -15 :
+                if self.raw_data.at[i,'Score'] > 0:
+                    if self.raw_data.at[i,'Close'] > 0:
+                        bet_balance2 = (((self.raw_data.at[i,'Close'] / 100) + 1) * self.bet_value) -self.bet_value
+                    else:
+                        bet_balance2 = ((1 - (100 / self.raw_data.at[i,'Close'])) * self.bet_value) -self.bet_value
+                else:
+                    bet_balance2 = -self.bet_value
+            else:
+                bet_balance2 = 0
+            self.raw_data.at[i,'Short Strategy'] = bet_balance2
+            net_balance = net_balance + (bet_balance + bet_balance2)
+            self.raw_data.at[i,'Net Balance'] = net_balance
 
 #Plotting Contract Momentum
-        lgr.info('Generating plot')
-        plt.hist(self.raw_data['Contract Momentum'], color='blue', edgecolor='black')
-        plt.title('Histogram of Contract Momentum')
-        plt.xlabel('Contract Momentum')
-        plt.ylabel('Strength of Momentum')
-        plt.show()
+        #lgr.info('Generating plot')
+        #plt.hist(self.raw_data['Contract Momentum'], color='blue', edgecolor='black')
+        #plt.title('Histogram of Contract Momentum')
+        #plt.xlabel('Contract Momentum')
+        #plt.ylabel('Strength of Momentum')
+        #plt.show()
 
         lgr.info('Generating plot')
-        plt.plot(self.raw_data.Net_balance)
+        plt.plot(self.raw_data['Net Balance'])
         plt.title('Line Chart starting with $1000')
         plt.xlabel('Date')
         plt.ylabel('Net Balance')
