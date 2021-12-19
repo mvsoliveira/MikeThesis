@@ -19,7 +19,7 @@ class Main(object):
         self.portifolio = 1000
         self.bet_ratio = 0.1
         self.raw_data = pd.DataFrame()
-        filepaths = (natsorted(glob.glob('../../in/xlsx/*2019*.xlsx')))
+        filepaths = (natsorted(glob.glob('../../in/xlsx/*.xlsx')))
         for filepath in filepaths:
             self.raw_data = self.raw_data.append(parser.read_xlsx(filepath),ignore_index=True)
         for i in range(0,len(self.raw_data),2):
@@ -79,7 +79,7 @@ class Main(object):
         #plt.ylabel('Strength of Momentum')
         #plt.show()
 
-        lgr.info('Generating plot')
+        #lgr.info('Generating plot')
         plt.plot(self.raw_data['Net Balance'])
         plt.title('Line Chart starting with $1000')
         plt.xlabel('Date')
