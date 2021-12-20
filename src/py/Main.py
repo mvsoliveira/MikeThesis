@@ -37,44 +37,32 @@ class Main(object):
 ###Attempt to make Lng strategy column (Using bets of $100)
         net_balance = self.portifolio
         for i in range(len(self.raw_data)):
-            #self.bet_value = self.bet_ratio * net_balance
-            self.bet_value = self.bet_ratio * self.portifolio
+            self.short_bet_value = self.bet_ratio * self.portifolio
+            self.long_bet_value = self.bet_ratio * self.portifolio
             if self.raw_data.at[i,'Contract Momentum'] >= 15 :
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i,'Open'] < 0:
-                        bet_balance = ((1 - (100 / self.raw_data.at[i,'Open'])) * self.bet_value) -self.bet_value
+                        bet_balance = ((1 - (100 / self.raw_data.at[i,'Open'])) * self.long_bet_value) -self.long_bet_value
                     else:
-                        bet_balance = (((self.raw_data.at[i,'Open'] / 100) + 1) * self.bet_value) -self.bet_value
+                        bet_balance = (((self.raw_data.at[i,'Open'] / 100) + 1) * self.long_bet_value) -self.long_bet_value
                 else:
-                    bet_balance = -self.bet_value
-            else:
-                bet_balance = 0
-            self.raw_data.at[i,'Long Strategy'] = bet_balance
-            net_balance = net_balance + bet_balance
-            #self.raw_data.at[i, 'Net Balance'] = net_balance
-###Short Strategy
-
-        #net_balance = self.portifolio
-        #self.raw_data.at[i, 'Long Strategy'] = bet_balance
-        #for i in range(len(self.raw_data)):
-            if self.raw_data.at[i,'Contract Momentum'] <= -15 :
+                    bet_balance = -self.long_bet_value
+                self.raw_data.at[i, 'Long Strategy'] = bet_balance
+            elif self.raw_data.at[i,'Contract Momentum'] <= -15 :
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i,'Close'] > 0:
-                        bet_balance2 = (((self.raw_data.at[i,'Close'] / 100) + 1) * self.bet_value)
+                        bet_balance = (((self.raw_data.at[i,'Close'] / 100) + 1) * self.short_bet_value)
                     else:
-                        bet_balance2 = ((1 - (100 / self.raw_data.at[i,'Close'])) * self.bet_value) -self.bet_value
+                        bet_balance = ((1 - (100 / self.raw_data.at[i,'Close'])) * self.short_bet_value) -self.short_bet_value
                 else:
-                    bet_balance2 = -self.bet_value
+                    bet_balance = -self.short_bet_value
+                self.raw_data.at[i, 'Short Strategy'] = bet_balance
             else:
-                bet_balance2 = 0
-            self.raw_data.at[i,'Short Strategy'] = bet_balance2
-            #previous_balance = self.raw_data.at[i + 1, 'Net Balance']
-            net_balance2 = net_balance + (bet_balance + bet_balance2)
-            self.raw_data.at[i,'Net Balance'] = net_balance2 + (bet_balance + bet_balance2)
-            #previous_balance = self.raw_data.at[i-1,'Net Balance']
+                bet_balance = 0
 
-            #self.raw_data.at[i, 'Contract return'] = bet_balance - bet_balance2)
-            #self.raw_data.at[i + 1, 'Contract Momentum'] = self.raw_data.at[i + 1, 'Momentum'] - self.raw_data.at[i, 'Momentum']
+            net_balance = net_balance + bet_balance
+            self.raw_data.at[i, 'Net Balance'] = net_balance
+
 
 #Plotting Contract Momentum
         #lgr.info('Generating plot')
