@@ -20,7 +20,7 @@ class Main(object):
         self.portifolio = 1000
         self.bet_ratio = 0.1
         self.raw_data = pd.DataFrame()
-        filepaths = (natsorted(glob.glob('../../in/xlsx/*2019*.xlsx')))
+        filepaths = (natsorted(glob.glob('../../in/xlsx/*.xlsx')))
         for filepath in filepaths:
             self.raw_data = self.raw_data.append(parser.read_xlsx(filepath),ignore_index=True)
         for i in range(0,len(self.raw_data),2):
@@ -82,7 +82,7 @@ class Main(object):
             if self.raw_data.at[i,'Contract Momentum'] >= 15:
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i, 'Vig-Less Open'] < 0:
-                        bet_balance = self.long_bet_value/((self.raw_data.at[i, 'Vig-Less Open']/100)) - self.long_bet_value
+                        bet_balance = self.long_bet_value/(-1* self.raw_data.at[i, 'Vig-Less Open']/100)
                     else:
                         bet_balance = (((self.raw_data.at[i, 'Vig-Less Open'] / 100) + 1) * self.long_bet_value) - self.long_bet_value
                 else:
@@ -98,7 +98,7 @@ class Main(object):
                     if self.raw_data.at[i, 'Vig-Less Close'] > 0:
                         bet_balance = (((self.raw_data.at[i, 'Vig-Less Close'] / 100) + 1) * self.short_bet_value) - self.short_bet_value
                     else:
-                        bet_balance = self.short_bet_value/(self.raw_data.at[i, 'Vig-Less Close']/100) - self.short_bet_value
+                        bet_balance = self.short_bet_value/(-1* self.raw_data.at[i, 'Vig-Less Close']/100)
                 else:
                     if self.raw_data.at[i, 'Vig-Less Close'] > 0:
                         bet_balance = - self.short_bet_value
@@ -130,7 +130,7 @@ class Main(object):
         plt.show()
 
 
-        self.raw_data['Date','VH', 'Team','Final', 'Open','Close', 'Year', 'Score', 'Momentum', 'Contract Momentum','Implied Probability Open', 'Implied Probability Close', 'Total Implied Open','Total Implied Close','Vig-Less Open', 'Vig-Less Close', 'Actual Prob open', 'Actual Prob close','Vig-Less Short Strategy', 'Vig-Less Long Strategy', 'Net Balance'].to_html('../../out/html/combined.html')
+        self.raw_data[['Date','VH', 'Team','Final', 'Open','Close', 'Year', 'Score', 'Momentum', 'Contract Momentum','Implied Probability Open', 'Implied Probability Close', 'Total Implied Open','Total Implied Close','Vig-Less Open', 'Vig-Less Close','Vig-Less Long Strategy', 'Vig-Less Short Strategy', 'Net Balance']].to_html('../../out/html/combined.html')
         #self.raw_data.to_excel(r'/Users/michaelvollmin/Desktop/combined.xlsx')
 if __name__ == '__main__':
     main = Main()
