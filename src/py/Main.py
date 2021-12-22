@@ -57,12 +57,13 @@ class Main(object):
         for i in range(0, len(self.raw_data), 2):
             self.raw_data.at[i, 'Total Implied Open'] = self.raw_data.at[i, 'Implied Probability Open'] + self.raw_data.at[i + 1, 'Implied Probability Open']
             self.raw_data.at[i + 1, 'Total Implied Open'] = self.raw_data.at[i + 1, 'Implied Probability Open'] + self.raw_data.at[i, 'Implied Probability Open']
+            self.raw_data.at[i, 'Total Implied Close'] = self.raw_data.at[i, 'Implied Probability Close'] + self.raw_data.at[i+1, 'Implied Probability Close']
+            self.raw_data.at[i+1, 'Total Implied Close'] = self.raw_data.at[i+1, 'Implied Probability Close'] + self.raw_data.at[i, 'Implied Probability Close']
+        for i in range(len(self.raw_data)):
             actual_probability_open = self.raw_data.at[i, 'Implied Probability Open'] / self.raw_data.at[i, 'Total Implied Open']
-            self.raw_data.at[i, 'Total Implied Close'] = self.raw_data.at[i, 'Implied Probability Close'] + self.raw_data.at[i + 1, 'Implied Probability Close']
-            self.raw_data.at[i + 1, 'Total Implied Close'] = self.raw_data.at[i + 1, 'Implied Probability Close'] + self.raw_data.at[i, 'Implied Probability Close']
             actual_probability_close = self.raw_data.at[i, 'Implied Probability Close'] / self.raw_data.at[i, 'Total Implied Close']
             if self.raw_data.at[i, 'Open'] < 0:
-                No_Vig_Open = -1 * (actual_probability_open / (1 - actual_probability_open)) * 100
+               No_Vig_Open = -1 * (actual_probability_open / (1 - actual_probability_open)) * 100
             else:
                 No_Vig_Open = ((1 - actual_probability_open) / actual_probability_open) * 100
             if self.raw_data.at[i, 'Close'] < 0:
@@ -70,9 +71,9 @@ class Main(object):
             else:
                 No_Vig_Close = ((1 - actual_probability_close) / actual_probability_close) * 100
             self.raw_data.at[i, 'Vig-Less Open'] = No_Vig_Open
-            self.raw_data.at[i+1, 'Vig-Less Open'] = No_Vig_Open
             self.raw_data.at[i, 'Vig-Less Close'] = No_Vig_Close
-            self.raw_data.at[i+1, 'Vig-Less Close'] = No_Vig_Close
+            self.raw_data.at[i, 'Actual Prob open']= actual_probability_open
+            self.raw_data.at[i, 'Actual Prob close'] = actual_probability_close
 ###Creating Long Position
         net_balance = self.portifolio
         for i in range(len(self.raw_data)):
@@ -81,7 +82,7 @@ class Main(object):
             if self.raw_data.at[i,'Contract Momentum'] >= 15:
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i, 'Vig-Less Open'] < 0:
-                        bet_balance = self.long_bet_value/(-1*(self.raw_data.at[i, 'Vig-Less Open']/100)) - self.long_bet_value
+                        bet_balance = self.long_bet_value/((self.raw_data.at[i, 'Vig-Less Open']/100)) - self.long_bet_value
                     else:
                         bet_balance = (((self.raw_data.at[i, 'Vig-Less Open'] / 100) + 1) * self.long_bet_value) - self.long_bet_value
                 else:
@@ -90,20 +91,24 @@ class Main(object):
                     else:
                         bet_balance = - self.long_bet_value
                 self.raw_data.at[i, 'Vig-Less Long Strategy'] = bet_balance
+                self.raw_data.at[i, 'Vig-Less Short Strategy'] = 0
     ###Creating Short Position
             elif self.raw_data.at[i,'Contract Momentum'] <= -15:
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i, 'Vig-Less Close'] > 0:
                         bet_balance = (((self.raw_data.at[i, 'Vig-Less Close'] / 100) + 1) * self.short_bet_value) - self.short_bet_value
                     else:
-                        bet_balance = self.short_bet_value/(-1*(self.raw_data.at[i, 'Vig-Less Close']/100)) - self.short_bet_value
+                        bet_balance = self.short_bet_value/(self.raw_data.at[i, 'Vig-Less Close']/100) - self.short_bet_value
                 else:
                     if self.raw_data.at[i, 'Vig-Less Close'] > 0:
                         bet_balance = - self.short_bet_value
                     else:
                         bet_balance = - self.short_bet_value
                 self.raw_data.at[i, 'Vig-Less Short Strategy'] = bet_balance
+                self.raw_data.at[i, 'Vig-Less Long Strategy'] = 0
             else:
+                self.raw_data.at[i, 'Vig-Less Short Strategy'] = 0
+                self.raw_data.at[i, 'Vig-Less Long Strategy'] = 0
                 bet_balance = 0
             net_balance = net_balance + bet_balance
             self.raw_data.at[i, 'Net Balance'] = net_balance
@@ -124,7 +129,8 @@ class Main(object):
         plt.ylabel('Net Balance')
         plt.show()
 
-        self.raw_data.to_html('../../out/html/combined.html')
+
+        self.raw_data['Date','VH', 'Team','Final', 'Open','Close', 'Year', 'Score', 'Momentum', 'Contract Momentum','Implied Probability Open', 'Implied Probability Close', 'Total Implied Open','Total Implied Close','Vig-Less Open', 'Vig-Less Close', 'Actual Prob open', 'Actual Prob close','Vig-Less Short Strategy', 'Vig-Less Long Strategy', 'Net Balance'].to_html('../../out/html/combined.html')
         #self.raw_data.to_excel(r'/Users/michaelvollmin/Desktop/combined.xlsx')
 if __name__ == '__main__':
     main = Main()
