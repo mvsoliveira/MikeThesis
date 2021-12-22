@@ -54,7 +54,6 @@ class Main(object):
             implied_probability_close = risk_close / _return_close
             self.raw_data.at[i, 'Implied Probability Open'] = implied_probability_open
             self.raw_data.at[i, 'Implied Probability Close'] = implied_probability_close
-        #actual_probability = self.raw_data.at[i, 'Implied Probability' / self.raw_data.at[i, 'Total Implied']
         for i in range(0, len(self.raw_data), 2):
             self.raw_data.at[i, 'Total Implied Open'] = self.raw_data.at[i, 'Implied Probability Open'] + self.raw_data.at[i + 1, 'Implied Probability Open']
             self.raw_data.at[i + 1, 'Total Implied Open'] = self.raw_data.at[i + 1, 'Implied Probability Open'] + self.raw_data.at[i, 'Implied Probability Open']
@@ -62,7 +61,6 @@ class Main(object):
             self.raw_data.at[i, 'Total Implied Close'] = self.raw_data.at[i, 'Implied Probability Close'] + self.raw_data.at[i + 1, 'Implied Probability Close']
             self.raw_data.at[i + 1, 'Total Implied Close'] = self.raw_data.at[i + 1, 'Implied Probability Close'] + self.raw_data.at[i, 'Implied Probability Close']
             actual_probability_close = self.raw_data.at[i, 'Implied Probability Close'] / self.raw_data.at[i, 'Total Implied Close']
-            #self.raw_data.at[i, 'New Open'] = No_Vig_Open
             if self.raw_data.at[i, 'Open'] < 0:
                 No_Vig_Open = -1 * (actual_probability_open / (1 - actual_probability_open)) * 100
             else:
@@ -83,12 +81,12 @@ class Main(object):
             if self.raw_data.at[i,'Contract Momentum'] >= 15:
                 if self.raw_data.at[i,'Score'] > 0:
                     if self.raw_data.at[i, 'Vig-Less Open'] < 0:
-                        bet_balance = self.long_bet_value
+                        bet_balance = self.long_bet_value/(-1*(self.raw_data.at[i, 'Vig-Less Open']/100)) - self.long_bet_value
                     else:
                         bet_balance = (((self.raw_data.at[i, 'Vig-Less Open'] / 100) + 1) * self.long_bet_value) - self.long_bet_value
                 else:
                     if self.raw_data.at[i, 'Vig-Less Open'] < 0:
-                        bet_balance = self.raw_data.at[i, 'Vig-Less Open']
+                        bet_balance = - self.long_bet_value
                     else:
                         bet_balance = - self.long_bet_value
                 self.raw_data.at[i, 'Vig-Less Long Strategy'] = bet_balance
@@ -98,12 +96,12 @@ class Main(object):
                     if self.raw_data.at[i, 'Vig-Less Close'] > 0:
                         bet_balance = (((self.raw_data.at[i, 'Vig-Less Close'] / 100) + 1) * self.short_bet_value) - self.short_bet_value
                     else:
-                        bet_balance = self.raw_data.at[i, 'Vig-Less Close']
+                        bet_balance = self.short_bet_value/(-1*(self.raw_data.at[i, 'Vig-Less Close']/100)) - self.short_bet_value
                 else:
                     if self.raw_data.at[i, 'Vig-Less Close'] > 0:
                         bet_balance = - self.short_bet_value
                     else:
-                        bet_balance =self.raw_data.at[i, 'Vig-Less Close']
+                        bet_balance = - self.short_bet_value
                 self.raw_data.at[i, 'Vig-Less Short Strategy'] = bet_balance
             else:
                 bet_balance = 0
