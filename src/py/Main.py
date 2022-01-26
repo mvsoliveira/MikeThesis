@@ -1,9 +1,6 @@
 
 import numpy as np
-import pandas as pd
 import logging as lgr
-import logging as lgr
-import numpy as np
 import pandas as pd
 lgr.basicConfig(level=lgr.INFO)
 import glob
@@ -17,7 +14,7 @@ class Main(object):
     def __init__(self):
         global No_Vig_Open
         self.min_games = 8
-        self.portifolio = 1000
+        self.portfolio = 1000
         self.bet_ratio = 0.1
         self.raw_data = pd.DataFrame()
         filepaths = (natsorted(glob.glob('../../in/xlsx/*.xlsx')))
@@ -36,7 +33,7 @@ class Main(object):
                 self.raw_data.at[i, 'Contract Momentum'] = self.raw_data.at[i, 'Momentum'] - self.raw_data.at[i+1, 'Momentum']
                 self.raw_data.at[i+1, 'Contract Momentum'] = self.raw_data.at[i+1, 'Momentum'] - self.raw_data.at[i, 'Momentum']
  ####Calculating implied probability, and vig
-        #net_balance = self.portifolio
+        #net_balance = self.portfolio
         for i in range(len(self.raw_data)):
             if self.raw_data.at[i,'Open'] < 0 :
                 risk_open = self.raw_data.at[i, 'Open'] * -1
@@ -75,43 +72,43 @@ class Main(object):
             self.raw_data.at[i, 'Actual Prob open']= actual_probability_open
             self.raw_data.at[i, 'Actual Prob close'] = actual_probability_close
 ###Creating Long Position
-        net_balance = self.portifolio
+        net_balance = self.portfolio
         for i in range(len(self.raw_data)):
-            self.short_bet_value = self.bet_ratio * self.portifolio
-            self.long_bet_value = self.bet_ratio * self.portifolio
-            if self.raw_data.at[i,'Contract Momentum'] >= 15:
+            self.short_bet_value = self.bet_ratio * self.portfolio
+            self.long_bet_value = self.bet_ratio * self.portfolio
+            if self.raw_data.at[i,'Contract Momentum'] >= 20:
                 if self.raw_data.at[i,'Score'] > 0:
-                    if self.raw_data.at[i, 'Vig-Less Open'] < 0:
-                        bet_balance = self.long_bet_value/(-1* self.raw_data.at[i, 'Vig-Less Open']/100)
+                    if self.raw_data.at[i, 'Open'] < 0:
+                        bet_balance = self.long_bet_value/(-1* self.raw_data.at[i, 'Open']/100)
                     else:
-                        bet_balance = (((self.raw_data.at[i, 'Vig-Less Open'] / 100) + 1) * self.long_bet_value) - self.long_bet_value
+                        bet_balance = (((self.raw_data.at[i, 'Open'] / 100) + 1) * self.long_bet_value) - self.long_bet_value
                 else:
-                    if self.raw_data.at[i, 'Vig-Less Open'] < 0:
+                    if self.raw_data.at[i, 'Open'] < 0:
                         bet_balance = - self.long_bet_value
                     else:
                         bet_balance = - self.long_bet_value
-                self.raw_data.at[i, 'Vig-Less Long Strategy'] = bet_balance
-                self.raw_data.at[i, 'Vig-Less Short Strategy'] = 0
+                self.raw_data.at[i, 'Long Strategy'] = bet_balance
+                self.raw_data.at[i, 'Short Strategy'] = 0
     ###Creating Short Position
-            elif self.raw_data.at[i,'Contract Momentum'] <= -15:
+            elif self.raw_data.at[i,'Contract Momentum'] <= -10 :
                 if self.raw_data.at[i,'Score'] > 0:
-                    if self.raw_data.at[i, 'Vig-Less Close'] > 0:
-                        bet_balance = (((self.raw_data.at[i, 'Vig-Less Close'] / 100) + 1) * self.short_bet_value) - self.short_bet_value
+                    if self.raw_data.at[i, 'Close'] > 0:
+                        bet_balance = (((self.raw_data.at[i, 'Close'] / 100) + 1) * self.short_bet_value) - self.short_bet_value
                     else:
-                        bet_balance = self.short_bet_value/(-1* self.raw_data.at[i, 'Vig-Less Close']/100)
+                        bet_balance = self.short_bet_value/(-1* self.raw_data.at[i, 'Close']/100)
                 else:
-                    if self.raw_data.at[i, 'Vig-Less Close'] > 0:
+                    if self.raw_data.at[i, 'Close'] > 0:
                         bet_balance = - self.short_bet_value
                     else:
                         bet_balance = - self.short_bet_value
-                self.raw_data.at[i, 'Vig-Less Short Strategy'] = bet_balance
-                self.raw_data.at[i, 'Vig-Less Long Strategy'] = 0
+                self.raw_data.at[i, 'Short Strategy'] = bet_balance
+                self.raw_data.at[i, 'Long Strategy'] = 0
             else:
-                self.raw_data.at[i, 'Vig-Less Short Strategy'] = 0
-                self.raw_data.at[i, 'Vig-Less Long Strategy'] = 0
+                self.raw_data.at[i, 'Short Strategy'] = 0
+                self.raw_data.at[i, 'Long Strategy'] = 0
                 bet_balance = 0
             net_balance = net_balance + bet_balance
-            self.raw_data.at[i, 'Net Balance'] = net_balance
+            self.raw_data.at[i,'Net Balance'] = net_balance
 
 
 #Plotting Contract Momentum
@@ -124,13 +121,13 @@ class Main(object):
 
         lgr.info('Generating plot')
         plt.plot(self.raw_data['Net Balance'])
-        plt.title('Line Chart starting with $1000')
-        plt.xlabel('Date')
+        plt.title('Trading Strategy, with Transaction Costs, growth of  $1000, Momentum threshold +20 (Long), -15 (Short)')
+        plt.xlabel('Time 2007-2021')
         plt.ylabel('Net Balance')
         plt.show()
 
 
-        self.raw_data[['Date','VH', 'Team','Final', 'Open','Close', 'Year', 'Score', 'Momentum', 'Contract Momentum','Implied Probability Open', 'Implied Probability Close', 'Total Implied Open','Total Implied Close','Vig-Less Open', 'Vig-Less Close','Vig-Less Long Strategy', 'Vig-Less Short Strategy', 'Net Balance']].to_html('../../out/html/combined.html')
+        self.raw_data[['Date','VH', 'Team','Final', 'Open','Close', 'Year', 'Score', 'Momentum', 'Contract Momentum','Implied Probability Open', 'Actual Prob open', 'Implied Probability Close', 'Actual Prob open', 'Total Implied Open','Total Implied Close','Vig-Less Open', 'Vig-Less Close','Long Strategy', 'Short Strategy', 'Net Balance']].to_html('../../out/html/combined.html')
         #self.raw_data.to_excel(r'/Users/michaelvollmin/Desktop/combined.xlsx')
 if __name__ == '__main__':
     main = Main()
