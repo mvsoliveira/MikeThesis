@@ -14,7 +14,7 @@ class Parser(object):
             if "{0:04d}".format(int(df.at[i,'Date']))[0:2] == "01":
                 year_crossed = 1
             df.at[i, 'Year'] = year_array[year_crossed]
-        return df
+        return [int(year), df]
 
     def save_html(self,df,filepath):
         df.to_html(filepath)
