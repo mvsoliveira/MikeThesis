@@ -14,13 +14,13 @@ import matplotlib.pyplot as plt
 class Main(object):
     def __init__(self):
         global No_Vig_Open
-        self.min_games = 6
+        self.min_games = 8
         self.portfolio = 1000
         self.bet_ratio_risky = 0.5
         self.bet_ratio_moderate = 0.35
         self.bet_ratio_conservative = 0.25
-        self.long_bet_momentum_threshold = 20
-        self.short_bet_momentum_threshold = -5
+        self.long_bet_momentum_threshold = 20/8
+        self.short_bet_momentum_threshold = -5/8
         self.plot_title= 'Long: 15 Short: -5'
         self.remove_playoff = False
 
@@ -215,7 +215,7 @@ class Main(object):
         plt.show()
 
         self.raw_data[['good_date','Date', 'VH', 'Team','Final', 'Open','Close', 'Year', 'Score', 'Momentum', 'Contract Momentum','Implied Probability Open', 'Actual Prob open', 'Implied Probability Close', 'Actual Prob open', 'Total Implied Open','Total Implied Close','Vig-Less Open', 'Vig-Less Close','Long Strategy', 'Short Strategy', 'Net Balance NO VIG','Net Balance WITH VIG', 'Long Strategy WITH VIG', 'Short Strategy WITH VIG']].to_html('../../out/html/combined.html')
-        #self.raw_data.to_excel(r'/Users/michaelvollmin/Desktop/combined.xlsx')
+        self.raw_data[['good_date', 'Net Balance NO VIG','Net Balance WITH VIG']] .to_csv(r'combined.csv')
 if __name__ == '__main__':
     main = Main()
 
