@@ -9,16 +9,28 @@ import scipy.optimize as sc
 import pandas as pd
 df = pd.read_csv("Percentchange.csv", usecols = ['SP','BofA','MCSI'])
 #returns = df.loc(axis=0)['SP','BofA','MSCI']
-print(df)
-
+#print(df)
+#stocklist= ['SP','BofA','MCSI']
+#stocks= (stock+ '.AX' for stock in stocklist)
 meanreturns= df.mean()
+meanreturnslist= [asset for asset in meanreturns]
+numAssets= len(meanreturns)
+weights= np.array([.03,.03,.04])
+
+#print(meanreturnslist)
+
+for asset in meanreturns:
+    print(asset)
+
 covmatrix= df.cov()
 
+#print(meanreturns)
 
 def portfolioperformance(weights, meanreturns, covmatrix):
     returns = np.sum(meanreturns*weights)*252
     std = np.sqrt(np.dot(weights.T, np.dot(covmatrix,weights)))*np.sqrt(252)
     return returns, std
+
 
 
 weights= np.array([.03,.03,.04])
@@ -42,7 +54,7 @@ def maxSR(meanreturns, covmatrix, riskFreeRate = 0, constraintSet=(0,1)):
     return result
 
 
-result= maxSR(meanreturns, covmatrix)
+result = maxSR(meanreturns, covmatrix)
 maxSR, maxWeights= result['fun'], result['x']
 print(maxSR, maxWeights)
 
@@ -54,7 +66,7 @@ def portfolioVariance(weights, meanreturns, covmatrix):
 def minimizeVariance(meanreturns, covmatrix, constraintSet=(0,1)):
     """Minimize the portfolio variance by altering the
      weights/allocation of assets in the portfolio"""
-    numAssets = len(meanreturns)
+    numAssets = len(meanreturnslist)
     args = (meanreturns, covmatrix)
     constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
     bound = constraintSet
@@ -75,7 +87,7 @@ def portfolioReturn(weights, meanreturns, covmatrix):
 
 def efficientOpt(meanreturns, covmatrix, returnTarget, constraintSet=(0,1)):
     """For each returnTarget, we want to optimise the portfolio for min variance"""
-    numAssets = len(meanreturns)
+    numAssets = meanreturns
     args = (meanreturns, covmatrix)
 
     constraints = ({'type':'eq', 'fun': lambda x: portfolioReturn(x, meanreturns, covmatrix) - returnTarget},
