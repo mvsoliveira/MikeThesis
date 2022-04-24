@@ -8,7 +8,7 @@ import plotly.graph_objs as go
 
 
 import pandas as pd
-df = pd.read_csv("Percentchange.csv", usecols = ['SP','BofA','MCSI'])
+df = pd.read_csv("Percentchange12.csv", usecols = ['net balance','SP','BofA','MCSI'])
 #returns = df.loc(axis=0)['SP','BofA','MSCI']
 #print(df)
 #stocklist= ['SP','BofA','MCSI']
@@ -16,7 +16,7 @@ df = pd.read_csv("Percentchange.csv", usecols = ['SP','BofA','MCSI'])
 meanreturns= df.mean()
 meanreturnslist= [asset for asset in meanreturns]
 numAssets= len(meanreturnslist)
-weights= np.array([.03,.03,.04])
+weights= np.array([.02,.02,.02,.04])
 
 #print(meanreturnslist)
 
@@ -167,7 +167,7 @@ def EF_graph(meanreturns, covmatrix, riskFreeRate=0, constraintSet=(0, 1)):
     data = [MaxSharpeRatio, MinVol, EF_curve]
 
     layout = go.Layout(
-        title='Portfolio Optimisation with the Efficient Frontier (without NHL gambling strategy)',
+        title='Portfolio Optimisation with the Efficient Frontier (with NHL gambling strategy)',
         yaxis=dict(title='Annualised Return (%)'),
         xaxis=dict(title='Annualised Volatility (%)'),
         showlegend=True,
